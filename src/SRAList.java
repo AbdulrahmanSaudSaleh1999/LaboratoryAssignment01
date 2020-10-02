@@ -6,11 +6,7 @@ public class SRAList
     private Node tail;      //stores Reference to Tail of the list
     private int size = 0;   //current size
 
-    public SRAList()
-    {
-        head = new Node(0, null, 0, 0, tail, null);
-        tail = new Node(0, null, 0, 0, null, head);
-    }
+    public SRAList() { }
 
     public int size() {return size;}
     public boolean isEmpty() { return size==0; }
@@ -20,7 +16,12 @@ public class SRAList
     {
         if (isEmpty())
         {
-            System.out.println("The list is empty!");
+            throw new NullPointerException("The list is empty!");
+        }
+
+        else if (id <= 0 && id >= 1000000)
+        {
+            throw new IllegalArgumentException("ID must be between 0 and 1000000!");
         }
 
         else
@@ -35,9 +36,7 @@ public class SRAList
             }
         }
 
-        // if the Node could not be found in the list, return null
-        System.out.println("Could not find a node with ID: " + id);
-        return null;
+        return null; //if not found
     }
 
     //attach Node N to the appropriate position in List (at the start of the list)
@@ -47,6 +46,11 @@ public class SRAList
         {
             head = N;
             tail = N;
+        }
+
+        else if (search(N.getID())!=null)
+        {
+            throw new IllegalArgumentException("There already exists a node with the same ID!");
         }
 
         else
@@ -65,40 +69,58 @@ public class SRAList
     {
         if (isEmpty())
         {
-            System.out.println("The list is empty!");
-            return;
+            throw new NullPointerException("The list is empty!");
+        }
+
+        else if (N == null) // if the node doesnt exist in the list, then print message
+        {
+            System.out.println("The input node does not exist in the list!");
         }
 
         else
         {
             Node temp = search(N.getID());
 
-            if (temp != null)           // checks if the node exists in the list, returns null if it does not
+            if (size == 1)
             {
-                if (temp == head)       // if the Node we want to remove is the head, we set the new head as the node after it
-                    head = head.getNext();
-
-                else if (temp == tail)  // if the Node we want to remove is the tail, we set the new tail as the node before it
-                    tail = tail.getPrev();
-
-                size--;
+                head = null;
+                tail = null;
             }
 
-            else
+            else if (temp == head)       // if the Node we want to remove is the head, we set the new head as the node after it
             {
-                System.out.println("The input node does not exist in the list!");
-                return;
+                head = head.getNext();
+                head.setPrev(null);
             }
+
+            else if (temp == tail)  // if the Node we want to remove is the tail, we set the new tail as the node before it
+            {
+                tail = tail.getPrev();
+                tail.setNext(null);
+            }
+
+            else // if the Node is in between the head and tail
+            {
+                Node successor = temp.getNext();
+                Node predecessor = temp.getPrev();
+
+                successor.setPrev(predecessor);
+                predecessor.setNext(successor);
+
+                temp.setNext(null);
+                temp.setPrev(null);
+            }
+
+            size--;
         }
     }
 
-    //Sorts list in an ascending order based on midterm scores
+    //Sorts list in an ascending order based on midterm scores using selection sort
     public void sortMidterm()
     {
         if (isEmpty())
         {
-            System.out.println("The list is empty!");
-            return;
+            throw new NullPointerException("The list is empty!");
         }
 
         else
@@ -122,13 +144,12 @@ public class SRAList
         }
     }
 
-    //Sorts list in an ascending order based on final scores
+    //Sorts list in an ascending order based on final scores using selection sort
     public void sortFinal()
     {
         if (isEmpty())
         {
-            System.out.println("The list is empty!");
-            return;
+            throw new NullPointerException("The list is empty!");
         }
 
         else
@@ -176,7 +197,9 @@ public class SRAList
         sortMidterm();
         Node median = MedianPointer();
 
-        if (size%2==0)
+        if (size == 1)
+            return head.getMidtermscore();
+        else if (size%2==0)
             return (median.getMidtermscore() + median.getNext().getMidtermscore()) / 2;
         else
             return median.getNext().getMidtermscore();
@@ -188,6 +211,8 @@ public class SRAList
         sortFinal();
         Node median = MedianPointer();
 
+        if (size == 1)
+            return head.getFinalscore();
         if (size%2==0)
             return (median.getFinalscore() + median.getNext().getFinalscore()) / 2;
         else
@@ -239,5 +264,16 @@ public class SRAList
         }
 
         return count;
+    }
+
+    // USED FOR DEBUGGING PURPOSES
+    public void printNodes()
+    {
+        Node current = head;
+        while (current!=null)
+        {
+            System.out.println(current.toString());
+            current = current.getNext();
+        }
     }
 }

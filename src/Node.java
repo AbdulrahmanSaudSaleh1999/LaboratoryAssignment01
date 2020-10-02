@@ -11,7 +11,12 @@ public class Node
 
     public Node()
     {
-
+        setID(0);
+        setName("");
+        setMidtermscore(0.0);
+        setFinalscore(0.0);
+        setNext(null);
+        setPrev(null);
     }
 
     public Node(int id, String name, double midtermscore, double finalscore, Node next, Node prev)
@@ -42,6 +47,7 @@ public class Node
     public Node getPrev() { return prev; }
     public void setPrev(Node prev) { this.prev = prev; }
 
+    // USED FOR DEBUGGING PURPOSES
     public String toString()
     {
         return (id + " " + name + " " + midtermscore + " " + finalscore);
